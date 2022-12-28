@@ -1,0 +1,3 @@
+1]validation for all api opration.
+2]file name according to the table name,in folder:-controller,module,route
+3]sequelize check name not repeating.
