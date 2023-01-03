@@ -1,7 +1,7 @@
 import express,{NextFunction, Request,Response} from "express"
 import db from "./config/database.config"
 import cors from 'cors'
-import router from "./route";
+import router from "./route/city_route";
 
 const app = express();
 const port = 3000;

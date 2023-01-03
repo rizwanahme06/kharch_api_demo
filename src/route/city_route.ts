@@ -1,7 +1,7 @@
 import express from "express";
 import CitiesValidator from "../validator"
 import Middleware from "../middleware";
-import CitiesController from "../controller";
+import CitiesController from "../controller/city_controller";
 
 const router = express.Router();
 
@@ -9,7 +9,7 @@ const router = express.Router();
 router.post('/',CitiesValidator.checkCreate(),
 Middleware.handleValidationError,CitiesController.create);
 
-router.get('/',Middleware.handleValidationError,CitiesController.readPagination);
+router.get('/',Middleware.handleValidationError,CitiesController.readAll);
 
 router.get('/:id',Middleware.handleValidationError,CitiesController.readwithID);
 

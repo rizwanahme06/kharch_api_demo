@@ -1,5 +1,5 @@
 import express,{Request,Response} from "express"
-import { Cities } from "../model";
+import { Cities } from "../model/city_model";
 
 
 
@@ -35,7 +35,7 @@ class CitiesController{
         }
     }
 
-    async  readPagination(req:Request,res:Response){
+    async  readAll(req:Request,res:Response){
 
 
         try{ 
