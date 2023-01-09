@@ -25,15 +25,15 @@ import db from "../config/database.config"
 
 interface CitiesAttributes{
     id:number,
-    stateid:number,
-    name:string,
-    ipaddress: string,
-    isactive: number,
-    isdeleted: number,
-    createdby: number,
-    createdat: Date,
-    modifiedby: Date,
-    modifiedat:Date,
+    stateId:number,
+    Name:string,
+    ipAddress: string,
+    isActive: number,
+    isDeleted: number,
+    createdBy: number,
+    createdAt: Date,
+    modifiedBy: Date,
+    modifiedAt:Date,
 }
 
 export class Cities extends Model<CitiesAttributes>{}
@@ -44,32 +44,32 @@ Cities.init({
         primaryKey:true,
         autoIncrement:true
     },
-    stateid:{
+    stateId:{
             type: DataTypes.INTEGER
     },
-    name:{
+    Name:{
         type:DataTypes.STRING,
         allowNull:false
     },
-    ipaddress:{
+    ipAddress:{
         type:DataTypes.STRING
     },
-    isactive:{
+    isActive:{
         type:DataTypes.INTEGER
     },
-    isdeleted:{
+    isDeleted:{
         type:DataTypes.INTEGER
     },
-    createdby:{
+    createdBy:{
         type:DataTypes.INTEGER
     },
-    createdat:{
+    createdAt:{
         type:DataTypes.DATE
     },
-    modifiedby:{
+    modifiedBy:{
         type:DataTypes.INTEGER
     },
-    modifiedat:{
+    modifiedAt:{
         type:DataTypes.DATE
     }
 },{

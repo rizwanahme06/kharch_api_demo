@@ -6,26 +6,25 @@ import { Cities } from "../model/city.model";
 
 class CitiesController{
     async  create(req:Request,res:Response){
-        // const id = uuidv4();
         const city ={
             id:req.body.id,
-            stateid:req.body.stateid ,
-            name:req.body.name,
-            ipaddress: req.body.ipaddress,
-            isactive: req.body.isactive,
-            isdeleted: req.body.isdeleted,
-            createdby: req.body.createdby,
-            createdat: req.body.createdat,
-            modifiedby: req.body.modifiedby,
-            modifiedat:req.body.modifiedat,
+            stateId:req.body.stateId ,
+            Name:req.body.Name,
+            ipAddress: req.body.ipAddress,
+            isActive: req.body.isActive,
+            isDeleted: req.body.isDeleted,
+            createdBy: req.body.createdBy,
+            createdAt: req.body.createdAt,
+            modifiedBy: req.body.modifiedBy,
+            modifiedAt:req.body.modifiedAt,
         };
 
         // const id = req.body.id
      try{ 
-        const name = await Cities.findOne({where:{name:req?.body.name.toLowerCase()}});
+        const name = await Cities.findOne({where:{Name:req?.body.Name.toLowerCase()}});
 
         if (name) {
-            return res.json({msg:"name alreadt exist"})
+            return res.json({msg:"name already exist"})
         }
 
         const record = await Cities.create(city)
@@ -52,7 +51,7 @@ class CitiesController{
         try{ 
             const {id}= req.params;
              const record = await Cities.findOne({where:{id}});
-             return res.json({status:"success",error:null,msg:'data has been retrive successfully',data:record});
+             return res.json({status:"success",error:null,msg:'data has been retrieve successfully',data:record});
          }
              catch(e:any){
                 return res.json({data:e.data,error:e,msg:e.massage,status:500})
@@ -68,7 +67,7 @@ class CitiesController{
                  return res.json({msg:'cannot find record'})
              }
      
-             const updateRecord =  await record.update(req.body,{name:record.getDataValue('name')});
+             const updateRecord =  await record.update(req.body,{name:record.getDataValue('Name')});
              res.send({record:updateRecord}) 
          }
              catch(e:any){
@@ -87,7 +86,7 @@ class CitiesController{
              
             //  const deleteRecord =  await record.destroy();
             // res.send({record:deleteRecord}) 
-             const updateRecord = await record.update({ isdeleted: 1 }, {
+             const updateRecord = await record.update({ isDeleted: 1 }, {
                 where: {
                   id:id 
                 }
