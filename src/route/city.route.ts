@@ -1,7 +1,7 @@
 import express from "express";
 import CitiesValidator from "../validator"
 import Middleware from "../middleware";
-import CitiesController from "../controller/city_controller";
+import CitiesController from "../controller/city.controller";
 
 const router = express.Router();
 

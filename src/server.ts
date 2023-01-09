@@ -1,10 +1,11 @@
 import express,{NextFunction, Request,Response} from "express"
 import db from "./config/database.config"
 import cors from 'cors'
-import router from "./route/city_route";
+import router from "./route/city.route";
 
 const app = express();
-const port = 3000;
+// const port = 3000;
+const port = process.env.PORT
 
 app.use(express.json())
 app.use(express.urlencoded({

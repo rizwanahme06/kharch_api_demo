@@ -1,5 +1,6 @@
+import e from "express";
 import express,{Request,Response} from "express"
-import { Cities } from "../model/city_model";
+import { Cities } from "../model/city.model";
 
 
 
@@ -28,10 +29,10 @@ class CitiesController{
         }
 
         const record = await Cities.create(city)
-        return res.json({record,msg:"Successfully create"})
+        // return res.json({record,msg:"Successfully create"})
     }
         catch(e:any){
-            return res.json({msg:e.massage,status:500,error:e})
+            return res.json({data:e.data,error:e,msg:e.massage,status:500})
         }
     }
 
@@ -43,7 +44,7 @@ class CitiesController{
             res.json(record);
         }
             catch(e:any){
-                return res.json({msg:"fail to read ",status:500,route:'/city/read'})
+                return res.json({data:e.data,error:e,msg:e.massage,status:500})
             }
     }
 
@@ -54,7 +55,7 @@ class CitiesController{
              return res.json({status:"success",error:null,msg:'data has been retrive successfully',data:record});
          }
              catch(e:any){
-                 return res.json({msg:"fail to read ",status:500,route:'/city/read/:id'})
+                return res.json({data:e.data,error:e,msg:e.massage,status:500})
              }
     }
 
@@ -71,7 +72,7 @@ class CitiesController{
              res.send({record:updateRecord}) 
          }
              catch(e:any){
-                 return res.json({msg:"fail to update ",status:500,route:'/city/update/:id'})
+                return res.json({data:e.data,error:e,msg:e.massage,status:500})
              }
     }
 
@@ -95,7 +96,7 @@ class CitiesController{
              res.send({record:updateRecord}) 
          }
              catch(e:any){
-                 return res.json({msg:"fail to update ",status:500,route:'/city/delete/:id'})
+                return res.json({data:e.data,error:e,msg:e.massage,status:500})
              }
     }
 }

@@ -45,8 +45,7 @@ Cities.init({
         autoIncrement:true
     },
     stateid:{
-            type: DataTypes.INTEGER,
-            primaryKey:true
+            type: DataTypes.INTEGER
     },
     name:{
         type:DataTypes.STRING,
