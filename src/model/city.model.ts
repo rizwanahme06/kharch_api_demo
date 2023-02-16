@@ -26,7 +26,7 @@ import db from "../config/database.config"
 interface CitiesAttributes{
     id:number,
     stateId:number,
-    Name:string,
+    name:string,
     ipAddress: string,
     isActive: number,
     isDeleted: number,
@@ -47,7 +47,7 @@ Cities.init({
     stateId:{
             type: DataTypes.INTEGER
     },
-    Name:{
+    name:{
         type:DataTypes.STRING,
         allowNull:false
     },

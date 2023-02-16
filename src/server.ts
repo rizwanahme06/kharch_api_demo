@@ -1,11 +1,12 @@
 import express,{NextFunction, Request,Response} from "express"
 import db from "./config/database.config"
 import cors from 'cors'
-import router from "./route/city.route";
+import cityRouter from "./route/city.route";
+import customerRouter from "./route/customer.route";
 
 const app = express();
-// const port = 3000;
-const port = process.env.PORT
+const port = 3000;
+// const PORT = process.env.PORT
 
 app.use(express.json())
 app.use(express.urlencoded({
@@ -14,7 +15,8 @@ app.use(express.urlencoded({
 )
 
 app.use(cors());
-app.use('/cities',router);
+app.use('/city',cityRouter);
+app.use('/customer',customerRouter);
 
 app.listen(port,()=>{
     console.log(`http://localhost:${port}`);

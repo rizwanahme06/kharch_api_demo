@@ -1,6 +1,8 @@
-import e from "express";
 import express,{Request,Response} from "express"
+import { QueryTypes } from "sequelize";
+
 import { Cities } from "../model/city.model";
+import { CityResponse } from "../model/Response/city.response";
 
 
 
@@ -8,50 +10,50 @@ class CitiesController{
     async  create(req:Request,res:Response){
         const city ={
             id:req.body.id,
-            stateId:req.body.stateId ,
-            Name:req.body.Name,
+            stateId:req.body.stateId,
+            name:req.body.name,
             ipAddress: req.body.ipAddress,
             isActive: req.body.isActive,
             isDeleted: req.body.isDeleted,
             createdBy: req.body.createdBy,
-            createdAt: req.body.createdAt,
+            createdAt: new Date(),
             modifiedBy: req.body.modifiedBy,
-            modifiedAt:req.body.modifiedAt,
+            modifiedAt:new Date(),
         };
 
-        // const id = req.body.id
      try{ 
-        const name = await Cities.findOne({where:{Name:req?.body.Name.toLowerCase()}});
+        const name = await Cities.findOne({where:{name:req?.body.name.toLowerCase()}});
 
         if (name) {
             return res.json({msg:"name already exist"})
         }
 
         const record = await Cities.create(city)
-        // return res.json({record,msg:"Successfully create"})
+
+        return res.json({status:"success",error:null,msg:'data has been uploaded successfully',data:CityResponse.CREATE?.(record)});
     }
         catch(e:any){
             return res.json({data:e.data,error:e,msg:e.massage,status:500})
         }
     }
 
-    async  readAll(req:Request,res:Response){
+    async  GetAll(req:Request,res:Response){
 
 
         try{ 
-            const record = await Cities.findAll({where:{}})
-            res.json(record);
+            const record = await Cities.findAll({attributes: ['id','stateId','name']});
+            return res.json({status:"success",error:null,msg:'data has been retrieve successfully',data:record});
         }
             catch(e:any){
                 return res.json({data:e.data,error:e,msg:e.massage,status:500})
             }
     }
 
-    async  readwithID(req:Request,res:Response){
+    async  GetById(req:Request,res:Response){
         try{ 
             const {id}= req.params;
              const record = await Cities.findOne({where:{id}});
-             return res.json({status:"success",error:null,msg:'data has been retrieve successfully',data:record});
+             return res.json({status:"success",error:null,msg:'data has been retrieve successfully',data:CityResponse.CREATE?.(record)});
          }
              catch(e:any){
                 return res.json({data:e.data,error:e,msg:e.massage,status:500})
@@ -67,8 +69,10 @@ class CitiesController{
                  return res.json({msg:'cannot find record'})
              }
      
-             const updateRecord =  await record.update(req.body,{name:record.getDataValue('Name')});
-             res.send({record:updateRecord}) 
+             const updateRecord =  await record.update(req.body,{name:record.getDataValue('name')});
+            //  res.send({record:updateRecord}) 
+             return res.json({status:"success",error:null,msg:'data has been updated successfully',data:CityResponse.CREATE?.(updateRecord)});
+
          }
              catch(e:any){
                 return res.json({data:e.data,error:e,msg:e.massage,status:500})

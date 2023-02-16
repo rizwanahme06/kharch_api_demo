@@ -3,18 +3,18 @@ import CitiesValidator from "../validator"
 import Middleware from "../middleware";
 import CitiesController from "../controller/city.controller";
 
-const router = express.Router();
+const cityRouter = express.Router();
 
 
-router.post('/',CitiesValidator.checkCreate(),
+cityRouter.post('/',CitiesValidator.checkCreate(),
 Middleware.handleValidationError,CitiesController.create);
 
-router.get('/',Middleware.handleValidationError,CitiesController.readAll);
+cityRouter.get('/',Middleware.handleValidationError,CitiesController.GetAll);
 
-router.get('/:id',Middleware.handleValidationError,CitiesController.readwithID);
+cityRouter.get('/:id',Middleware.handleValidationError,CitiesController.GetById);
 
-router.put('/:id',Middleware.handleValidationError,CitiesController.update);
+cityRouter.put('/:id',Middleware.handleValidationError,CitiesController.update);
 
-router.delete('/:id',Middleware.handleValidationError,CitiesController.delete);
+cityRouter.delete('/:id',Middleware.handleValidationError,CitiesController.delete);
 
-export default router;
+export default cityRouter;

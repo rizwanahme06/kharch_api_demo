@@ -3,7 +3,7 @@ import { body, check, query } from "express-validator";
 class CitiesValidator {
     checkCreate() {
         return [
-            body('name').notEmpty().withMessage('the name should not be emty')
+            body('FirstName').notEmpty().withMessage('the name should not be emty')
         ];
     }
 }
