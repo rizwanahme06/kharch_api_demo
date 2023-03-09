@@ -1,13 +1,15 @@
 import { DataTypes, Model } from "sequelize";
 import db from "../config/database.config";
 
+// Create model of customer table.
+
 interface CustomerAttribute{
     id:number,
     roleId:number,
-    FirstName:string,
-    LastName:string,
-    Email:string,
-    Mobile:number,
+    firstName:string,
+    lastName:string,
+    email:string,
+    mobile:number,
     ipAddress: string,
     isActive: number,
     isDeleted: number,
@@ -18,7 +20,11 @@ interface CustomerAttribute{
     otp:string
 }
 
-export class Customers extends Model<CustomerAttribute>{}
+  
+export class Customers extends Model<CustomerAttribute>{
+    static id: any;
+    
+}
 
 Customers.init({
     id: {
@@ -29,16 +35,16 @@ Customers.init({
     roleId: {
         type: DataTypes.INTEGER
     },
-    FirstName: {
+    firstName: {
         type:DataTypes.STRING
     },
-    LastName: {
+    lastName: {
         type:DataTypes.STRING
     },
-    Email: {
+    email: {
         type:DataTypes.STRING
     },
-    Mobile: {
+    mobile: {
         type:DataTypes.INTEGER
     },
     ipAddress:{

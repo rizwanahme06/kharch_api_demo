@@ -1,6 +1,12 @@
-api should be authenticated.
+..api should be authenticated.
 comment shoukd by there .
-createat:new Date().
-modefiedat:
-take username from jwt.
-change name.
+..createat:new Date().
+..modefiedat:
+..take username from jwt.
+..change name.
+..bydefault in delete should be 0
+..isactive ahould be 1
+--verify with time
+comment should be a common file then we have tp apply it.
+if expire the show error of expire else show error of not valid OTP.
+jwt token should verify each table and there operation.

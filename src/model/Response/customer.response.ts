@@ -1,10 +1,11 @@
 interface customers {
     id:number,
     roleId:number,
-    FirstName:string,
-    LastName:string,
-    Email:string,
-    Mobile:number,
+    firstName:string,
+    lastName:string,
+    email:string,
+    mobile:number,
+    isActive:number
 };
 
 interface CustomerResponseType{
@@ -17,9 +18,16 @@ CustomerResponse.CREATE=(item)=>{
     return{
         id:item.id,
         roleId:item.roleId,
-        FirstName:item.FirstName,
-        LastName:item.LastName,
-        Email:item.Email,
-        Mobile:item.Mobile,
-    }
+        firstName:item.firstName,
+        lastName:item.lastName,
+        email:item.email,
+        mobile:item.mobile,
+        isActive:item.isActive
+}
+}
+
+
+export let FailResponse = (e:any)=>{
+    return ({ data: e.data, error: e, msg: e.massage, status: "Error " })
+
 }

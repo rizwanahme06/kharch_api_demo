@@ -1,79 +1,136 @@
-import express, { Request, Response } from "express"
+import express, { NextFunction, Request, Response } from "express"
 import { Customers } from "../model/customer.model";
-import { CustomerResponse } from "../model/Response/customer.response";
-import randomstring from 'randomstring';
-import nodemailer from 'nodemailer';
-import { body } from "express-validator";
+import { CustomerResponse,FailResponse } from "../model/Response/customer.response";
+import { generateOTP, sendOTPEmail, otpCache, saveOTP } from '../security/OTPHandler'
+import jwt from 'jsonwebtoken'
 
 
-class CitiesController {
+
+class customerController {
     async create(req: Request, res: Response) {
         const customer = {
             id: req.body.id,
             roleId: req.body.roleId,
-            FirstName: req.body.FirstName,
-            LastName: req.body.LastName,
-            Email: req.body.Email,
-            Mobile: req.body.Mobile,
+            firstName: req.body.firstName,
+            lastName: req.body.lastName,
+            email: req.body.email,
+            mobile: req.body.mobile,
             ipAddress: req.body.ipAddress,
-            isActive: req.body.isActive,
-            isDeleted: req.body.isDeleted,
+            isActive: req.body.isActive || 0,
+            isDeleted: req.body.isDeleted || 0,
             createdBy: req.body.createdBy,
             createdAt: new Date(),
             modifiedBy: req.body.modifiedBy,
             modifiedAt: new Date(),
-            otp:req.body.otp
+            otp: req.body.otp
         };
 
         try {
-            const name = await Customers.findOne({ where: { FirstName: req?.body.FirstName.toLowerCase() } });
+            const name = await Customers.findOne({ where: { email: req?.body.email, mobile: req.body.mobile } });
 
             if (name) {
-                return res.json({ msg: "name already exist" })
+                return res.json({ msg: "email or mobile number already exist" })
             }
 
             const record = await Customers.create(customer)
 
             return res.json({ status: "success", error: null, msg: 'data has been uploaded successfully', data: CustomerResponse.CREATE?.(record) });
+            
         }
         catch (e: any) {
-            return res.json({ data: e.data, error: e, msg: e.massage, status: 500 })
+            return res.json({ data: e.data, error: e, msg: e.massage, status: "Error" })
         }
     }
 
     async SendEmail(req: Request, res: Response) {
 
-        if (await Customers.findOne({ where: { Email: req?.body.Email } })) {
-            const { Email } = req.body;
-            const otp = generateOTP();
+        try {
 
-            try {
-                await sendOTPEmail(Email, otp);
-                res.status(200).json({ message: 'OTP sent successfully.'+otp  });
-            } catch (e: any) {
-                return res.json({ data: e.data, error: e, msg: e.massage, status: 500 })
+            if (await Customers.findOne({ where: { email: req?.body.email } })) {
+                const { email } = req.body;
+                const otp = generateOTP(email);
+
+                try {
+                    await sendOTPEmail(email, await otp);
+                    res.status(200).json({ message: 'OTP sent successfully.' });
+
+                } catch (e: any) {
+                    return res.json({ data: e.data, error: e, msg: e.massage, status: "Error" })
+                }
+
             }
-        } else {
-            res.json("invalid Email")
+            else{
+                res.json("wrong Email");
+            }
+            // return FailResponse("error") 
+
+        } catch (e: any) {
+            return res.json({ data: e.data, error: e, msg: e.massage, status: "error " })
         }
 
     }
 
     async VarifyEmail(req: Request, res: Response) {
+        try {
 
-        const { Email, otp } = req.body;
+            const { email, otp,isActive } = req.body;
+            const cachedOTP = otpCache[email];
 
-        if (otp === generateOTP()) {
-            res.status(200).json({ message: 'OTP verified successfully.' });
+            if (cachedOTP && cachedOTP.otp === otp && cachedOTP.expirationTime > Date.now()) {
+                const token = jwt.sign({ email }, 'my_secret_key');
+                res.json({ message: "success", token })
+                await Customers.update({ isActive: 1 }, {
+                    where: {
+                      email: email
+                    }
+                  });
+            }
+            else{
+                res.json("you have enter wrong OTP")
+            }
+        } 
+        catch (e: any) {
+            return res.json({ data: e.data, error: e, msg: e.massage, status: "Error " })
         }
- 
-         else {
-            res.status(401).json({ message: 'Invalid OTP.'});   
-        }
-        
+
     }
 
+    
+    async  Login(req: any, res: Response, next: NextFunction) {
 
+
+        try {
+            const bearerHeader = req.headers["authorization"]
+            if (typeof bearerHeader !== 'undefined') {
+
+                const bearer = bearerHeader?.split(" ");
+                const bearerToken = bearer[1];
+                req.token = bearerToken
+
+                jwt.verify(req.token,'my_secret_key',async function(err:any,data:any) {
+                    if(err){
+                        res.json(err)
+                    }
+                    else{
+                        data.isActive = 1;
+                        res.json({
+                            message: 'Successfully logged in',
+                            data: data
+                        });
+                    }
+                })
+
+                next();
+            } else {
+                res.sendStatus(403)
+            }
+
+        } catch (e: any) {
+            return res.json({ data: e.data, error: e, msg: e.massage, status: "Fail " })
+        }
+
+
+    }
 
     async GetAll(req: Request, res: Response) {
 
@@ -83,7 +140,7 @@ class CitiesController {
             return res.json({ status: "success", error: null, msg: 'data has been retrieve successfully', data: record });
         }
         catch (e: any) {
-            return res.json({ data: e.data, error: e, msg: e.massage, status: 500 })
+            return res.json({ data: e.data, error: e, msg: e.massage, status: "Fail " })
         }
     }
 
@@ -94,7 +151,7 @@ class CitiesController {
             return res.json({ status: "success", error: null, msg: 'data has been retrieve successfully', data: CustomerResponse.CREATE?.(record) });
         }
         catch (e: any) {
-            return res.json({ data: e.data, error: e, msg: e.massage, status: 500 })
+            return res.json({ data: e.data, error: e, msg: e.massage, status: "Fail" })
         }
     }
 
@@ -107,13 +164,13 @@ class CitiesController {
                 return res.json({ msg: 'cannot find record' })
             }
 
-            const updateRecord = await record.update(req.body, { FirstName: record.getDataValue('FirstName'), LastName: record.getDataValue('LastName'), Email: record.getDataValue('Email'), Mobile: record.getDataValue('Mobile') });
+            const updateRecord = await record.update(req.body, { FirstName: record.getDataValue('firstName'), lastName: record.getDataValue('lastName'), email: record.getDataValue('email'), mobile: record.getDataValue('mobile') });
             //  res.send({record:updateRecord}) 
             return res.json({ status: "success", error: null, msg: 'data has been updated successfully', data: CustomerResponse.CREATE?.(record) });
 
         }
         catch (e: any) {
-            return res.json({ data: e.data, error: e, msg: e.massage, status: 500 })
+            return res.json({ data: e.data, error: e, msg: e.massage, status: "Fail" })
         }
     }
 
@@ -135,40 +192,9 @@ class CitiesController {
             res.send({ record: updateRecord })
         }
         catch (e: any) {
-            return res.json({ data: e.data, error: e, msg: e.massage, status: 500 })
+            return res.json({ data: e.data, error: e, msg: e.massage, status: "Fail" })
         }
     }
 }
 
-export default new CitiesController();
-
-const generateOTP = () => {
-    return randomstring.generate({
-        length: 6,
-        charset: 'numeric'
-    });
-};
-
-
-const sendOTPEmail = async (email: string, otp: string) => {
-    const transporter = nodemailer.createTransport({
-        host: 'smtp.gmail.com',
-        service: 'Gmail',
-        port: 587,
-        secure: false,
-        auth: {
-            user: 'rizwanahme06@gmail.com',
-            pass: 'hczpzgjwuomeqisa'
-        }
-    });
-
-    const mailOptions = {
-        from: 'rizwanahme06@gmail.com',
-        to: email,
-        subject: 'Verification OTP',
-        text: `Your OTP for email verification is ${otp}.`
-    };
-
-    await transporter.sendMail(mailOptions);
-};
-
+export default new customerController();
